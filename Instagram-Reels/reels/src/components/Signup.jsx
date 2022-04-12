@@ -1,105 +1,99 @@
-import React, { useState, useContext } from 'react';
-import { AuthContext } from '../contexts/AuthProvider';
-import { storage } from '../firebase';
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { useNavigate } from 'react-router-dom';
-import UserServices from '../services/user.services';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import {
+  Alert, Card, CardContent,Typography, 
+  CardActions, Button, TextField } 
+  from '@mui/material';
+
+import { makeStyles } from '@mui/styles';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import './Signup.css';
+import { Box } from '@mui/system';
 
 
-export default function Signup() {
+function Signup() {
 
-  // user credentials
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [username, setUsername] = useState('');
-  const [error, setError] = useState("");
-  const [loader, setLoader] = useState(false);
-  const [file, setFile] = useState(null);
-  const { signup } = useContext(AuthContext);
-  const [progress, setProgress] = useState(0);
+  const useStyles = makeStyles({
+    text1: {
+      color: 'gray',
+      display: 'flex',
+      justifyContent: 'center',
+      fontFamily: 'sans-serif'
 
-  const history = useNavigate();
+    },
+    text2:{
+      color: 'gray',
+      display: 'flex',
+      justifyContent: 'center',
+      fontFamily: 'sans-serif',
+      position:'relative',
+      top: '-0.5rem'
 
-  const handleSignUp = async(e) => {
-    e.preventDefault();
-
-    try {
-      const res = await signup(email, password);
-      // after signup we got a user object in which we get uid 
-      const uid = res.user.uid;
-      const storageRef = ref(storage, `users/${uid}/profilePic`);
-      const uploadTask = uploadBytesResumable(storageRef, file);
-
-      uploadTask.on('state_changed', (snapshot) => {
-        //progress call
-        const prog = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-        setProgress(prog);
-        console.log(prog);
-      }, (err) => {
-        //error call
-        console.log(err);
-      }, async () => {
-        //success call
-        const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
-        const data = {
-          username,
-          email,
-          userId: uid,
-          profileUrl: downloadUrl,
-          postIds: []
-        }
-        await UserServices.addUser(data);
-      })
-    }
-    catch (err) {
-      console.log(err);
+    },
+    card:{
+      height: '6%',
+      marginTop: '1rem'
     }
 
-    setEmail("");
-    setPassword("");
-    setUsername("");
-    setFile(null);
-    history("/");
+  });
 
-
-  }
-
-  const handleFileChange = (e) => {
-    let file = e?.target?.files[0];
-
-    if (file) {
-      setFile(e.target.files[0]);
-    }
-  }
-
+  const classes = useStyles();
 
   return (
-    <div>
-      <form onSubmit={handleSignUp}>
-        <div>
-          <label htmlFor="">UserName</label>
-          <input type="text" value={username}
-            onChange={(e) => { setUsername(e.target.value) }} />
+    <div className='mainContainer'>
+       <div className='carousel' style={{ backgroundImage: `url('instaPhone1.png')`, backgroundSize: 'cover', border: 'none' }}>
+        <div className='car'>
         </div>
-        <div>
-          <label htmlFor="">Email</label>
-          <input type="email" value={email}
-            onChange={(e) => { setEmail(e.target.value) }} />
-        </div>
-        <div>
-          <label htmlFor="">Password</label>
-          <input type="password"
-            value={password}
-            onChange={(e) => { setPassword(e.target.value) }}></input>
-        </div>
-        <div>
-          <label htmlFor="">Profile Image</label>
-          <input type="file" accept="image/*"
-            onChange={(e) => { handleFileChange(e) }} />                </div>
-        <button type="submit" disabled={loader}>SignUp</button>
-      </form>
+
+
+      </div>
+      <div className='signupCard'>
+        <Card variant='outlined'>
+          <div className='insta-logo'>
+            <img src='instagram.png' className = 'heading'alt='instagram' />
+          </div>
+          <Typography
+            variant='subtitle2'
+            className={classes.text1}
+          >Sign up to see photos and videos from your friend
+          </Typography>
+
+          <CardContent>
+          { true && <Alert severity="error">This is an error alert — check it out!</Alert>}
+          <TextField id="outlined-basic" label="Email" variant="outlined" fullWidth size='small' margin='dense'/>
+          <TextField id="outlined-basic" label="Password" variant="outlined" fullWidth size='small' margin='dense'/>
+          <TextField id="outlined-basic" label="Full Name" variant="outlined" fullWidth size='small' margin='dense'/>
+          <Button variant='outlined'  htmlFor='upload-profile-btn' component='label' color='secondary' size='small' startIcon={<CloudUploadIcon/>} fullWidth margin='dense'>Upload Profile Image</Button>
+          <input type = 'file' id='upload-profile-btn' style={{display:'none'}}></input>
+          <Typography>
+            <Box sx={{textAlign:'left',color:'gray', fontFamilt:'sans-serif', marginLeft:'2rem', marginTop: '0.3rem' }}>pic uploaded</Box>
+          </Typography>
+          </CardContent>
+          <CardActions>
+            
+          <Button variant='contained' fullWidth>SIGN UP</Button>
+          </CardActions>
+        <CardContent>
+            <Typography variant='subtitle2' className={classes.text1}>
+              By signing up, you agree to our Terms, Data Policy and
+              Cookies Policy
+          </Typography> 
+            
+        </CardContent>
+        </Card>
+
+        <Card variant='outlined' className={classes.card}>
+          <CardContent>
+            <Typography size='small' className={classes.text2}>
+            Have and account? <Link to='/login' style={{textDecoration:'underline'}}>Login</Link>
+
+            </Typography>
+          </CardContent>
+        </Card>
+      </div>
     </div>
-
-
-  )
+  );
 }
+
+export default Signup
+

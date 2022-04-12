@@ -1,0 +1,37 @@
+.mainContainer{
+    display: flex;
+    justify-content: center;
+}
+
+.signupCard{
+    width: 28vw;
+    margin-top: 5%;
+}
+
+@media screen and (max-width: 740px) {
+    .signupCard {
+      width: 50vw;
+    }
+  }
+.insta-logo{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+.heading {
+    width: 50%;
+}
+img{
+    width: 100%;
+    border: 0;
+}
+
+.carousel{
+    height: 570px;
+    width: 360px;
+    margin-right: 2rem;
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+    position: relative;    
+}

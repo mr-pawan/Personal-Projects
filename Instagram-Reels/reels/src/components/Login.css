@@ -1,0 +1,48 @@
+.mainContainer {
+    display: flex;
+    justify-content: center;
+}
+
+.loginCard {
+    width: 28vw;
+    margin-top: 7%;
+}
+
+@media screen and (max-width: 740px) {
+    .loginCard {
+        width: 50vw;
+        margin-top: 12%;
+
+    }
+}
+
+.insta-logo {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.heading {
+    width: 50%;
+}
+img{
+    width: 100%;
+    border: 0;
+}
+.carousel{
+    height: 570px;
+    width: 360px;
+    margin-right: 2rem;
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+    position: relative;    
+}
+
+.car{
+    position: absolute;
+    height: 423px;
+    width: 241px;
+    left: 143px;
+    top: 93px;
+}
