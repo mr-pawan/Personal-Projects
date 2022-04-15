@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Alert, Card, CardContent, Typography,
   CardActions, Button, TextField
@@ -8,16 +8,25 @@ import {
 
 import { makeStyles } from '@mui/styles';
 import './Login.css';
-import image1 from '../Assets/1.jpg';
-import image2 from '../Assets/2.jpg';
-import image3 from '../Assets/3.jpg';
-import image4 from '../Assets/4.jpg';
+import image1 from '../../Assets/1.jpg';
+import image2 from '../../Assets/2.jpg';
+import image3 from '../../Assets/3.jpg';
+import image4 from '../../Assets/4.jpg';
 import 'pure-react-carousel/dist/react-carousel.es.css';
 import { CarouselProvider, Slider, Slide, ButtonBack, ButtonNext, Image } from 'pure-react-carousel';
+import { AuthContext } from '../../contexts/AuthProvider';
 
 
 
 function Login() {
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loader, setLoader] = useState(false);
+  const [error, setError] = useState('');
+  
+
+
 
   const useStyles = makeStyles({
     text1: {
@@ -47,8 +56,41 @@ function Login() {
 
   const classes = useStyles();
 
+  const {login} = useContext(AuthContext);
+  const history = useNavigate();
+
+  const handleSubmit = async() => {
+    setError('');
+    if(!email || !password){
+      setError('All fileds are mandatory');
+      setTimeout(() => {
+        setError('');
+      }, 2000);
+      return;
+    }
+    try{
+      setLoader(true);
+      await login(email, password);
+      history('/');
+
+    }catch(err){
+      setError(err.message);
+      setTimeout(() => {
+        setError('');
+      }, 2000);
+      return;
+    }
+    setEmail('');
+    setPassword('');
+    setLoader(false);
+    
+  }
+
   return (
-    <div className='mainContainer'>
+    <>
+      {
+        loader ? <h1>Loading ...</h1>:
+        <div className='mainContainer'>
       <div className='carousel' style={{ backgroundImage: `url('instaPhone1.png')`, backgroundSize: 'cover', border: 'none' }}>
         <div className='car'>
           <CarouselProvider
@@ -75,13 +117,38 @@ function Login() {
           </div>
 
           <CardContent>
-            {true && <Alert severity="error">This is an error alert — check it out!</Alert>}
-            <TextField id="outlined-basic" label="Email" variant="outlined" fullWidth size='small' margin='dense' />
-            <TextField id="outlined-basic" label="Password" variant="outlined" fullWidth size='small' margin='dense' />
+            {error != '' && <Alert severity="error">{error}</Alert>}
+            <TextField 
+              id="outlined-basic" 
+              label="Email" 
+              variant="outlined" 
+              fullWidth 
+              size='small' 
+              margin='dense' 
+              type='email'
+              value = {email}
+              onChange = {(e) => {setEmail(e.target.value)}}  
+            />
+            <TextField 
+              id="outlined-basic" 
+              label="Password" 
+              variant="outlined" 
+              fullWidth 
+              size='small' 
+              margin='dense' 
+              type='password'
+              value = {password}
+              onChange = {(e) => {setPassword(e.target.value)}}  
+            />
           </CardContent>
           <CardActions>
 
-            <Button variant='contained' fullWidth>SIGN UP</Button>
+            <Button 
+              variant='contained' 
+              fullWidth
+              onClick = {handleSubmit}    
+            > SIGN UP
+              </Button>
           </CardActions>
 
         </Card>
@@ -95,9 +162,10 @@ function Login() {
         </Card>
       </div>
 
-    </div>
+    </div> 
+      }
+    </>
   );
 }
 
 export default Login
-
