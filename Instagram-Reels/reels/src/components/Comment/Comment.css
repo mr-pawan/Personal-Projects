@@ -1,0 +1,12 @@
+.profile-box{
+    display: flex;
+    margin-top: 1rem;
+
+}
+.name{
+    font-weight: bold;
+    padding-left: 1rem;
+}
+.avatar{
+    padding-left: 0.1rem;
+}

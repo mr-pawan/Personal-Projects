@@ -1,31 +1,36 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../../contexts/AuthProvider'
 import { Button } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import './Feed.css';
 import UploadVideo from '../UploadVideo';
-import {getUser} from '../../services/UserServices';
 import Posts from '../Posts';
-// import {collection, doc, onSnapshot} from 'firebase/firestore';
-// import {db} from '../../firebase';
+import {collection, doc, onSnapshot} from 'firebase/firestore';
+import {db} from '../../firebase/auth';
+import Loading from '../Loading';
 
 
 function Feed() {
   const { logout, user } = useContext(AuthContext);
   const [currUser, setCurrUser] = useState('');
+  const [loading, setLoading] = useState(false);
  
-  const history = useNavigate();
+  const navigate = useNavigate();
   const handleLogout = async () => {
+    setLoading(true);
     await logout();
-    history('/');
+    setLoading(false);
+    navigate(0);
   }
 
   useEffect(async() => {
-     const res = await getUser(user.uid);
-     setCurrUser(res.data());
-  }, [user])
-
-  
+    const docRef = await doc(db, 'users', user.uid);
+    let res = null;
+    onSnapshot(docRef, (snapshot) => {
+      res = snapshot.data();
+      setCurrUser(res);
+    })
+  }, [user]);
 
   return (
     <>
@@ -38,12 +43,14 @@ function Feed() {
           >Logout
           </Button>
         </div>
-        <UploadVideo currUser = {currUser}/>
-        <Posts currUser = {currUser}/>
+          <UploadVideo currUser = {currUser}/>
+          <Posts currUser = {currUser}/> 
       </div>
-
+      
+      
     </>
   )
 }
 
 export default Feed
+

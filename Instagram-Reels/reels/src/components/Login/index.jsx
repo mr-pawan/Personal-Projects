@@ -15,6 +15,7 @@ import image4 from '../../Assets/4.jpg';
 import 'pure-react-carousel/dist/react-carousel.es.css';
 import { CarouselProvider, Slider, Slide, ButtonBack, ButtonNext, Image } from 'pure-react-carousel';
 import { AuthContext } from '../../contexts/AuthProvider';
+import Loading from '../Loading';
 
 
 
@@ -71,9 +72,11 @@ function Login() {
     try{
       setLoader(true);
       await login(email, password);
+      setLoader(false);
       history('/');
 
     }catch(err){
+      setLoader(false);
       setError(err.message);
       setTimeout(() => {
         setError('');
@@ -89,7 +92,7 @@ function Login() {
   return (
     <>
       {
-        loader ? <h1>Loading ...</h1>:
+        loader ? <Loading />:
         <div className='mainContainer'>
       <div className='carousel' style={{ backgroundImage: `url('instaPhone1.png')`, backgroundSize: 'cover', border: 'none' }}>
         <div className='car'>
@@ -147,7 +150,7 @@ function Login() {
               variant='contained' 
               fullWidth
               onClick = {handleSubmit}    
-            > SIGN UP
+            > LOG IN
               </Button>
           </CardActions>
 

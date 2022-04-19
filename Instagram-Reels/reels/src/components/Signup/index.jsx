@@ -1,20 +1,25 @@
 import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-    Alert, Card, CardContent, Typography,
-    CardActions, Button, TextField
-}
-    from '@mui/material';
+    Alert,
+    Card, 
+    CardContent, 
+    Typography,
+    CardActions, 
+    Button, 
+    TextField
+}from '@mui/material';
 
 import { makeStyles } from '@mui/styles';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import './Signup.css';
-import { Box } from '@mui/system';
+import Box from '@mui/material/Box';
 import { AuthContext } from '../../contexts/AuthProvider';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { storage } from '../../firebase';
+import { storage } from '../../firebase/auth';
 import { serverTimestamp } from 'firebase/firestore';
-import { addUser } from '../../services/UserServices'
+import { addUser } from '../../services/user.services';
+import Loading from '../Loading';
 
 function Signup() {
     const [email, setEmail] = useState('');
@@ -62,7 +67,8 @@ function Signup() {
     // handle the signup 
     const { signup } = useContext(AuthContext);
     const history = useNavigate();
-    const handleSubmit = async () => {
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         const data = {
             email,
             password,
@@ -105,19 +111,24 @@ function Signup() {
                 }
                 await addUser(data, uid);
                 history('/');
+                setLoading(false);
+
                 
             })
         }
         catch (err) {
+            setLoading(false);
             setError(err.message);
             removeError();
         }
+
+
+        
 
         setEmail('');
         setPassword('');
         setFile(null);
         setFullName('');
-        setLoading(false);
     }
 
     const handleFileChange = (e) => {
@@ -132,7 +143,7 @@ function Signup() {
     return (
         <>
             {
-                loading ? <h1>Loading...</h1> :
+                loading ? <Loading />:
                     <div className='mainContainer'>
                         <div className='carousel' style={{ backgroundImage: `url('instaPhone1.png')`, backgroundSize: 'cover', border: 'none' }}>
                             <div className='car'>

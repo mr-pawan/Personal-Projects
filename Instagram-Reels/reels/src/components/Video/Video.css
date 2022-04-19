@@ -1,0 +1,6 @@
+.video-style{
+    height: 80vh;
+    width: 100%;
+    scroll-snap-align: start;
+    border-radius: 20px;
+}

@@ -1,46 +1,35 @@
 import './App.css';
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import { AuthContext } from './contexts/AuthProvider';
 import {Routes as Router, Route} from 'react-router-dom';
-import Login from './components/Login/Login';
-import Signup from './components/Signup/Signup';
-import Feed from './components/Feed/Feed';
+import Login from './components/Login';
+import Signup from './components/Signup';
+import Feed from './components/Feed';
 import { Navigate } from 'react-router-dom';
-
+import Loading from './components/Loading';
 
 function App() {
-  const {user, loading} = useContext(AuthContext);
-  return (
-   <>
-{/* 
+  const {user} = useContext(AuthContext);
+  const [loading, setLoading] = useState(true);
+  setTimeout(() => {
+    setLoading(false);
+  }, 1500)
+  return(
+    
     <Router>
-      <Route path = '/login' element={
-        loading ? <h1>Loading...</h1> 
-        :user ? <Navigate replace to='/'/> 
-        :<Login />} 
-      />
-      <Route path = '/signup' element = {<Signup />} />
-      <Route path = '/' exact element = {
-        loading ? <h1>Loading...</h1>: 
-        !user ? <Navigate replace to= '/login'/>
-        :<Feed />  
-      } />
-    </Router> */}
-
-     <Router>
-          <Route path='/login' element={loading ? <h1>Loading ...</h1>:
+      <Route path='/login' element={loading ? <Loading/>:
           user ? <Navigate replace to ='/' /> 
           : <Login />}></Route>
           <Route path='/signup' element={<Signup />}></Route>
 
-          <Route path='/' exact element={
-            loading ? <h1>Loading ...</h1> : 
-            user ? <Feed /> : <Navigate replace to='/login' />
+          <Route path='/' exact element={loading ? <Loading />
+          : user ? <Feed /> :  <Navigate replace to='/login' />
           }></Route>
-        </Router>
+          
+      </Router>
 
-   </>
-  );
+  )
+  
 }
 
 export default App;

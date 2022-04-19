@@ -1,15 +1,15 @@
 import React, { useState } from 'react'
-import { Button } from '@mui/material';
+import { Button, Alert, LinearProgress } from '@mui/material';
 import MovieCreationIcon from '@mui/icons-material/MovieCreation';
-import Alert from '@mui/material/Alert';
-import LinearProgress from '@mui/material/LinearProgress';
 import {v4 as uuidV4} from 'uuid';
-import { storage } from '../../firebase';
+import { storage } from '../../firebase/auth';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { serverTimestamp } from 'firebase/firestore';
-import {addPost} from '../../services/Posts.Services';
-import {updateUser} from '../../services/UserServices';
+import {addPost} from '../../services/post.services';
+import {updateUser} from '../../services/user.services';
+
 function UploadVideo({currUser}) {
+
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [progress, setProgress] = useState(0);
@@ -43,7 +43,7 @@ function UploadVideo({currUser}) {
                 console.log('progress is ', progress);
            }, (err) => {
                //error call
-               setError(err);
+                setError(err);
                 removeError();
            }, async() => {
                //success call
@@ -62,12 +62,13 @@ function UploadVideo({currUser}) {
                await updateUser(currUser.id, currUser.postIds, newPost.id); 
                setLoading(false);
                
+               
            })
         }
         catch(err){
-            console.log(err);
-            setError(err.message);
             setLoading(false);
+            console.log(err.message);
+            setError(err.message);
         }
 
     }
