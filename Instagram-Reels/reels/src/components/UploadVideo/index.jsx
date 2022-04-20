@@ -7,7 +7,6 @@ import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { serverTimestamp } from 'firebase/firestore';
 import {addPost} from '../../services/post.services';
 import {updateUser} from '../../services/user.services';
-
 function UploadVideo({currUser}) {
 
     const [loading, setLoading] = useState(false);
@@ -87,6 +86,7 @@ function UploadVideo({currUser}) {
                     component='label'
                     htmlFor='upload-video'
                     disabled={loading}
+                    sx={{marginTop: '5rem'}}
                 >
                     Upload Video
                 </Button>

@@ -8,6 +8,7 @@ import Posts from '../Posts';
 import {collection, doc, onSnapshot} from 'firebase/firestore';
 import {db} from '../../firebase/auth';
 import Loading from '../Loading';
+import Navbar from '../Navbar';
 
 
 function Feed() {
@@ -15,34 +16,25 @@ function Feed() {
   const [currUser, setCurrUser] = useState('');
   const [loading, setLoading] = useState(false);
  
-  const navigate = useNavigate();
-  const handleLogout = async () => {
-    setLoading(true);
-    await logout();
-    setLoading(false);
-    navigate(0);
-  }
 
-  useEffect(async() => {
-    const docRef = await doc(db, 'users', user.uid);
-    let res = null;
-    onSnapshot(docRef, (snapshot) => {
-      res = snapshot.data();
-      setCurrUser(res);
-    })
+  useEffect(() => {
+    async function fetchUser(){
+      const docRef = await doc(db, 'users', user.uid);
+      let res = null;
+      await onSnapshot(docRef, (snapshot) => {
+        res = snapshot.data();
+        setCurrUser(res);
+      })
+    }
+    fetchUser();
   }, [user]);
+
+
 
   return (
     <>
+    <Navbar currUser={currUser}/>
       <div className='main-page'>
-        <div>Feed</div>
-        <div>
-          <Button
-            variant="contained"
-            onClick={handleLogout}
-          >Logout
-          </Button>
-        </div>
           <UploadVideo currUser = {currUser}/>
           <Posts currUser = {currUser}/> 
       </div>

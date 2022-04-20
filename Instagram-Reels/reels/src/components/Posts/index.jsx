@@ -1,148 +1,116 @@
 import React, { useState, useEffect } from 'react'
+import { CircularProgress } from '@mui/material';
+import { Avatar, Dialog } from '@mui/material';
 import './Posts.css'
 import Video from '../Video';
 import Like from '../Like'
-import ModeCommentIcon from '@mui/icons-material/ModeComment';
-import {
-    Dialog,
-    Button,
-    Card,
-    CardActions,
-    Typography,
-    TextField,
-    Avatar,
-    CircularProgress
-} from '@mui/material';
-import Like2 from '../Like2';
-import { addComment } from '../../services/comment.services';
-import { updatePostWithComment } from '../../services/post.services';
-import {collection, doc, onSnapshot, query, orderBy} from 'firebase/firestore';
-import {db} from '../../firebase/auth';
+import { db } from '../../firebase/auth';
+import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
 import Comment from '../Comment';
+import ModeCommentIcon from '@mui/icons-material/ModeComment';
+
+
 
 function Posts({ currUser }) {
     const [posts, setPosts] = useState(null);
-    const [loading, setLoading] = useState(null);
-    const [open, setOpen] = useState(false);
-    const [commentText, setCommentText] = useState('');
-    const [comments, setComments] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [open, setOpen] = useState(null);
 
 
     const handleClickOpen = (id) => {
         setOpen(id);
-        };
+    };
     
-        const handleClose = () => {
+    const handleClose = () => {
         setOpen(null);
-        };
-    
-
+    };
+      
     useEffect(() => {
-        setLoading(true);
+       async function fetchPosts(){
         let postsArr = [];
-        const postsCollectionRef =  collection(db, 'posts');
-        const q =  query(postsCollectionRef, orderBy('createdAt', "desc"));
-         onSnapshot(q, (snapshotArr) => {
+        const postsCollectionRef = await collection(db, 'posts');
+        const q = await query(postsCollectionRef, orderBy('createdAt', "desc"));
+         await onSnapshot(q, (snapshotArr) => {
+            setLoading(true);
             postsArr = [];
             snapshotArr.forEach((doc) => {
                 let data = { ...doc.data(), postId: doc.id };
                 postsArr.push(data);
             })
-            setPosts(postsArr);
             setLoading(false);
+            setPosts(postsArr);
 
         })
+       }
+       fetchPosts();
+
+       return(()=> {
+           fetchPosts();    
+       })
         
-    }, [currUser]);
+    }, []);
 
-    
-    const handleClick = async(postData) => {
-        if(commentText == ''){
-            return;
-        }
-        const commentObj = {
-            commentText,
-            userProfileUrl: currUser.profileUrl,
-            userName: currUser.fullName 
-        }
 
-        const commentDoc =  await addComment(commentObj);
-        await updatePostWithComment(postData.postId, postData, commentDoc.id);
-        setCommentText('');
-    }
+ 
+
+    const callback = (entries) => {
+        entries.forEach(async(entry) => {
+            let ele = entry.target.childNodes[0];
+            console.log(ele);
+            ele.play().then(() => {
+                if(!ele.paused && !entry.isIntersecting){
+                    ele.pause();
+                }
+            })
+        })
+      }
+      
+
+    let observer = new IntersectionObserver(callback, {
+        threshold:0.6,
+    });
+
+    useEffect(() => {
+        const elements = document.querySelectorAll('.videos');
+        elements.forEach((element) => {
+            observer.observe(element);
+        })
+        return () => {
+            observer.disconnect();
+        }
+      }, [posts])
 
     return (
         <>
             {
-                (!currUser || !posts) ? <CircularProgress />
-                    :loading ? <CircularProgress /> :
-                    <div className='video-container'>
+                !currUser || !posts || loading ? <CircularProgress />
+                    :
+                    <div className='video-container' id='110'>
                         {
                             posts.map((post, index) => {
                                 return (
-                                    <div className='video' key={index}>
+                                    <div className='videos' key={index}>
                                         <Video src={post.pUrl} />
                                         <div className='fa'>
                                             <Avatar src={currUser.profileUrl} />
                                             <h4>{currUser.fullName.split(' ')[0]}</h4>
                                         </div>
-                                            <Like currUser={currUser} postData={post}></Like>
-                                            <ModeCommentIcon 
-                                                className='comment-icon'
-                                                onClick = {() => {handleClickOpen(post.pId)}}
-                                            />
-                                            <Dialog
-                                                open={post.pId == open}
-                                                onClose={handleClose}
-                                                aria-labelledby="alert-dialog-title"
-                                                aria-describedby="alert-dialog-description"
-                                                fullWidth
-                                                maxWidth='md'
-                                            >
-                                            <div className='modal-container'>
-                                            <div className='video-modal'>
-                                                <video autoPlay controls muted>
-                                                    <source src = {post.pUrl} />
-                                                </video>
-                                            </div>
-                                            <div className='comment-modal'>
-                                            <Card className='card1'>                    
-                                               
-                                            </Card>
-                                                <Card className='card2'>
-                                                    <div style = {{display:'flex'}}>
-                                                        <Like2 currUser={currUser} postData={post} />
-                                                        <Typography style={{paddingLeft: '1rem'}} >Liked by {post.likes.length}</Typography>
-                                                    </div>
-                                            
-                                                    <div style={{display:'flex', justifyContent:'space-around'}}>
-                                                    <TextField
-                                                        id="outlined-basic"
-                                                        variant="outlined"
-                                                        placeholder='Add a comment'
-                                                        autoComplete='off'
-                                                        size='small'
-                                                        fullWidth
-                                                        value = {commentText}
-                                                        onChange = {(e) => setCommentText(e.target.value)}
-                                                        onKeyDown = {(e) => {
-                                                            if(e.key == 'Enter') 
-                                                                handleClick(post);
-                                                        }}
-                                                    />
-                                                    <Button
-                                                        variant='string'
-                                                        size='small'
-                                                        onClick = {() => {handleClick(post)}}
-                                                    >
-                                                        post
-                                                    </Button>
-                                                    </div>                   
-                
-                                                </Card>
-                                            </div>
-                                        </div>
-                                            </Dialog>
+                                        <Like currUser={currUser} postData={post}></Like>
+                                        <ModeCommentIcon 
+                                            className='comment-container'
+                                            onClick={() => {handleClickOpen(post.pId)}}
+                                            style={{color:'gray'}}
+                                        />
+                                        <Dialog
+                                            open={open == post.pId}
+                                            onClose={handleClose}
+                                            aria-labelledby="alert-dialog-title"
+                                            aria-describedby="alert-dialog-description"
+                                            fullWidth
+                                            maxWidth='md'
+                                        >
+                                            <Comment className='comment-container' currUser={currUser} postData = {post}/>
+                                        </Dialog>
                                     </div>
                                 )
                             })
@@ -154,3 +122,4 @@ function Posts({ currUser }) {
     )
 }
 export default Posts
+

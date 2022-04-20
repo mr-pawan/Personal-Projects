@@ -7,6 +7,7 @@ import Signup from './components/Signup';
 import Feed from './components/Feed';
 import { Navigate } from 'react-router-dom';
 import Loading from './components/Loading';
+import Profile from './components/Profile';
 
 function App() {
   const {user} = useContext(AuthContext);
@@ -20,7 +21,11 @@ function App() {
       <Route path='/login' element={loading ? <Loading/>:
           user ? <Navigate replace to ='/' /> 
           : <Login />}></Route>
+
           <Route path='/signup' element={<Signup />}></Route>
+
+          <Route path='/profile/:id' element={loading ? <Loading />
+          : user ? <Profile />: <Navigate replace to='/login' />}/>
 
           <Route path='/' exact element={loading ? <Loading />
           : user ? <Feed /> :  <Navigate replace to='/login' />

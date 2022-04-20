@@ -1,0 +1,20 @@
+.spacer{
+    min-height: 12vh;
+}
+.upper-part{
+    height: 14vh;
+    width: 30%;
+    margin: auto;
+    display: flex;
+    justify-content: space-around;
+   
+}
+
+.profile-img img{
+    height: 6rem;
+    width: 6rem;
+    border-radius: 50%;
+}
+.hrow{
+    width: 60%;
+}

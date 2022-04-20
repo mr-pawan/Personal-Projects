@@ -5,6 +5,9 @@ import {
     getDoc, 
     updateDoc, 
     doc, 
+    query,
+    orderBy,
+    onSnapshot
 } from "firebase/firestore";
 
 const postCollectionRef = collection(db, 'posts');
@@ -35,4 +38,23 @@ export const updatePostWithComment = (postId, postData, commentId) => {
     updateDoc(docRef, {
         comments: postData.comments != null ? [...postData.comments, commentId]: [commentId]
     })
+}
+
+
+export const getPosts = async() => {
+    const q =  await query(postCollectionRef, orderBy('createdAt', "desc"));
+    let postsArray = [];
+    onSnapshot(q, (snapshotArr) => {
+        postsArray = [];
+        snapshotArr.forEach((doc) => {
+            let data = { ...doc.data(), postId: doc.id };
+            postsArray.push(data);
+        })
+    })
+    return postsArray;
+}
+
+export const getPost = async(id) => {
+    const docRef = await doc(db, 'posts', id);
+    return getDoc(docRef);
 }

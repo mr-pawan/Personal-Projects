@@ -28,33 +28,24 @@ export default function AuthProvider({ children }) {
     }
 
     useEffect(() => {
-    //    const unsub =  onAuthStateChanged(auth, (user) => {
-    //         setLoading(true);    
+       const unsub =  onAuthStateChanged(auth, (user) => {
+            setLoading(true);    
 
-    //         if(user){
-    //             setUser(user);
-    //             setLoading(false);
+            if(user){
+                setUser(user);
+                setLoading(false);
                 
-    //         }else{
-    //             setUser(null);
-    //             setLoading(false);
-    //         }
-    //     });
+            }else{
+                setUser(null);
+                setLoading(false);
+            }
+        });
         
-    //     return () => {
-    //         unsub();
-    //     }
+        return () => {
+            unsub();
+        }
 
-   onAuthStateChanged(auth, (user) => {
-        setLoading(true);    
 
-        // if(user){
-        //     setUser(user);
-        //     setLoading(false);
-        // }
-        setUser(user);
-        setLoading(false);
-    });
 
     },[]);
    

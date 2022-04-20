@@ -18,12 +18,16 @@ function Video({ src }) {
     }
   }
 
+
+  
+
   return (
     <>
         <video className='video-style'
           muted='muted'
           onClick={clickHandler}
           onEnded = {handleEnded}
+          
         >
         <source src={src} type='video/mp4'/>
         </video>
@@ -32,3 +36,6 @@ function Video({ src }) {
 }
 
 export default Video;
+
+
+
